@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Create a layer from a portal item | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <script>
+
+        require(["esri/identity/IdentityManager"], function (esriId) {
+            let portalURL = "https://host.arcgis.com";
+            findOAuthInfo = function () {
+                let oAuthInfo = esriId.findOAuthInfo(portalURL)
+                console.log(oAuthInfo.toJSON())
+            }
+        });
+
+      require(["esri/Map", "esri/views/SceneView", "esri/layers/Layer","esri/identity/IdentityManager","esri/config"], (Map, SceneView, Layer,IdentityManager) => {
+        const map = new Map({
+          basemap: "hybrid"
+        });
+
+        const view = new SceneView({
+          map: map,
+          container: "viewDiv",
+          zoom: 16,
+          center: [90.283092, 22.369860]
+        });
+
+        var serverUrl='https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer/1';
+        var username='mah_gis2023';
+        var password='mah_gis12345!';
+
+          console.log('IdentityManager ',IdentityManager);
+        
+
+        /************************************************
+         *
+         * Create a layer from an existing Portal item hosted
+         * in ArcGIS Online using the ID of the item.
+         *
+         *************************************************/
+        Layer.fromPortalItem({
+          portalItem: {
+            // autocasts as new PortalItem()
+            id: "1fd2d6192c554a31bbc90945fcf0ff91",
+           
+          }
+        })
+          .then(addLayer)
+          .catch(rejection);
+
+        // Adds the layer to the map once it loads
+        function addLayer(layer) {
+          map.add(layer);
+        }
+
+        function rejection(error) {
+          console.log("Layer failed to load: ", error);
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>

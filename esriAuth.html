@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Generate a token</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+    <!-- Load Esri Leaflet Vector from CDN -->
+    <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js" crossorigin=""></script>
+    <style>
+      html,
+      body,
+      #map {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        color: #323232;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+              const apiKey = "AAPK1953b729b5594134b3c0637a544f93b4ujYHb9Mv80eLTm6Fr9dPeq9E5fV-G_yBqXoYvhKtYxLePiMnRVHx0T8qn3Mifpz0";
+
+
+      if (!window.location.origin) {
+        window.location.origin =
+          window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
+      }
+
+      const map = L.map("map").setView([22.369860,90.283092], 9);
+
+      L.esri.Vector.vectorBasemapLayer("ArcGIS:StreetsNight", {
+        apikey: apiKey
+      }).addTo(map);
+
+      function serverAuth(callback) { //To acess the dynamic map layer
+        L.esri.post(
+          "https://www.arcgis.com/sharing/generateToken", //https://[root]/generateToken (POST only)
+          {
+            username: "mah_gis2023",
+            password: "mah_gis12345!",
+            f: "json",
+            expiration: 86400,
+            client: "referer",
+            referer: 'https://www.arcgis.com'
+          },
+          callback
+        );
+      }
+
+      serverAuth(function (error, response) {
+        if (error) {
+          return;
+        }
+        const dl = L.esri
+          .dynamicMapLayer({
+            url: "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer/1",
+            opacity: 1,
+            token: response.token
+          })
+          .addTo(map);
+          serverAuth(function (error, response) {
+            if (error) {
+              return;
+            }
+           
+            console.log('here ',response.token);
+          });
+        dl.on("authenticationrequired", function (e) {
+          serverAuth(function (error, response) {
+            if (error) {
+              return;
+            }
+            e.authenticate(response.token);
+            console.log('here');
+          });
+        });
+      });
+
+
+      const zipcodes = L.esri.featureLayer({
+          url: "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer",
+         
+        })
+        .addTo(map);
+        console.log('zipcodes ',zipcodes);
+       
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Create a layer from a portal item | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <script>
+
+    const serverUrl = "https://www.arcgis.com";
+    const username = "mah_gis2023";
+    const password = "mah_gis12345!";
+
+    // Construct the URL to the token endpoint
+    const tokenUrl = `${serverUrl}/sharing/generateToken`;
+
+    // Set up the parameters for the generateToken request
+    const params = {
+        username,
+        password,
+        referer: 'https://www.arcgis.com',
+        expiration: 60, // Token will expire in 60 minutes
+        f: "json"
+    };
+    var tokenVal='';
+
+    // Make the generateToken request using the Fetch API
+    fetch(tokenUrl, {
+        method: "POST",
+        body: new URLSearchParams(params)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(tokenResponse => {
+             const token = tokenResponse.token;
+             require([
+                "esri/config",
+                "esri/views/MapView",
+                "esri/layers/Layer",
+                // "esri/Map",
+                // "esri/views/SceneView",
+                "esri/WebMap"
+            ], function (esriConfig, MapView,Layer,WebMap) {
+                // Set the portal URL
+                esriConfig.portalUrl = "https://www.arcgis.com/sharing/rest";
+                console.log('token in ',token);
+                // Set the token to be used for all requests
+                esriConfig.request.token = token;
+
+                // // Create a new WebMap and MapView
+                var webmap = new WebMap({
+                    portalItem: {
+                        // The ID of your web map
+                        id: "08862f28c9144301b27c32ceaaae4b9f"
+                    }
+                });
+                var view = new MapView({
+                    container: "viewDiv",
+                    map: webmap,
+                    center: [90.283092, 22.369860],
+                    zoom: 13
+                });
+                   
+             }); 
+           
+        })
+        .catch(error => {
+            console.log('error ',error);
+            // Handle errors here
+        });
+
+
+          
+     
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>

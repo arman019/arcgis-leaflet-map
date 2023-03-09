@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Create a layer from a portal item | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+
+  <script src="https://js.arcgis.com/4.26/"></script>
+
+  <script>
+    // require(["esri/config","esri/Map", "esri/views/SceneView", "esri/layers/Layer"], (esriConfig,Map, SceneView, Layer) => {
+    //  esriConfig.apiKey= "AAPK0c4cd3921a074b14969de9a3121843bcWBVAvjO-nxQqy2cko7vauksHfO2FeTH8JrOKT1BA9gKMvFywpwd1_akeWZS7G3iZ";
+
+    //   const map = new Map({
+    //     basemap: "hybrid"
+    //   });
+    //   const view = new SceneView({
+    //     map: map,
+    //     container: "viewDiv",
+    //     zoom: 16,
+    //     center: [90.283092, 22.369860]
+    //   });
+     
+    // });
+
+    require([
+            "esri/identity/IdentityManager",
+            "esri/WebMap",
+            "esri/views/MapView"
+        ], function (esriId, WebMap, MapView) {
+
+            const identityManager = esriId.identityManager;
+            console.log('esriId ',esriId);
+            const portalUrl = "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer/0";
+            const apiKey = "AAPK0c4cd3921a074b14969de9a3121843bcWBVAvjO-nxQqy2cko7vauksHfO2FeTH8JrOKT1BA9gKMvFywpwd1_akeWZS7G3iZ";
+            esriId.registerToken({
+                server: portalUrl,
+                token: apiKey,
+                expires: new Date().getTime() + 60 * 60 * 1000, // Expiration time in milliseconds
+            });
+            
+
+            const webMapItemId = "08862f28c9144301b27c32ceaaae4b9f";
+            const webmap = new WebMap({
+                portalItem: {
+                    id: webMapItemId,
+                    portalUrl: portalUrl,
+                },
+            });
+
+            const view = new MapView({
+                container: "viewDiv",
+                map: webmap,
+            });
+        });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

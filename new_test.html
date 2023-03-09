@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Create a layer from a portal item | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+
+  <script src="https://js.arcgis.com/4.26/"></script>
+
+  <script>
+
+
+    // require([
+    //     "esri/identity/IdentityManager",
+    //     "esri/identity/UserCredential",
+    //     "esri/config"
+    // ], function (IdentityManager, UserCredential, esriConfig) {
+    //     var credential = new UserCredential({
+    //         username: "mah_gis2023",
+    //         password: "mah_gis12345!"
+    //     });
+
+    //     IdentityManager.registerToken({
+    //         server: "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer",
+    //         token: "75aP3TbCrs3hM2wCSHpf4jVpOTI_aYohHLiG1vm5ogakiJalidOgh7zs-B8VAz1SpqR4-qyzW6adWXfacaIzLqxMgkGrWO4EDN8_qU7B2pNbY9F_rlCXcn1wA4cfgOxLsL0esC72MV9BVyY2zf5jNgp0Xm56z6fhPTwi3hzlhurW2VXyXsP8fVirh8r4wN-m",
+    //         userId: "mah_gis2023",
+    //         expires: Date.now() + (30 * 24 * 60 * 60 * 1000)
+    //     });
+
+    //     esriConfig.portalUrl = "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer";
+    // });
+
+
+    require([
+            "esri/identity/IdentityManager",
+            "esri/config",
+            "esri/Map",
+            "esri/views/MapView",
+        ], function (esriId, esriConfig, Map, MapView) {
+            // Set the server URL and portal URL
+            esriConfig.portalUrl = "https://www.arcgis.com/sharing";
+            esriConfig.request.proxyUrl = "/proxy";
+
+            // Set up the credentials for the authentication
+            var credentials = {
+                clientId: "mah_gis2023",
+                clientSecret: "mah_gis12345!",
+                
+            };
+
+            esriId
+                .generateToken(credentials, "https://www.arcgis.com/sharing/generateToken")
+                .then(function (response) {
+                    console.log('res ',response);
+                    esriId.registerToken({
+                        server: "https://www.arcgis.com/sharing/rest",
+                        token: response.token,
+                    });
+
+                    var map = new Map({
+                        basemap: "streets",
+                    });
+
+                    var view = new MapView({
+                        container: "viewDiv",
+                        map: map,
+                        center:[90.283092, 22.369860],
+                        zoom: 13,
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+
+
+    require(["esri/Map", "esri/views/SceneView", "esri/layers/Layer"], (Map, SceneView, Layer) => {
+      const map = new Map({
+        basemap: "hybrid"
+      });
+      const view = new SceneView({
+        map: map,
+        container: "viewDiv",
+        zoom: 16,
+        center: [90.283092, 22.369860]
+      });
+      /************************************************
+       *
+       * Create a layer from an existing Portal item hosted
+       * in ArcGIS Online using the ID of the item.
+       *
+       *************************************************/
+      Layer.fromPortalItem({
+          portalItem: {
+            // autocasts as new PortalItem()
+            id: "1fd2d6192c554a31bbc90945fcf0ff91"
+          }
+        })
+        .then(addLayer)
+        .catch(rejection);
+      // Adds the layer to the map once it loads
+      function addLayer(layer) {
+        map.add(layer);
+      }
+
+      function rejection(error) {
+        console.log("Layer failed to load: ", error);
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Create a layer from a portal item | Sample | ArcGIS Maps SDK for JavaScript 4.26</title>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <script>
+        require(["esri/Map",
+                "esri/views/SceneView",
+                "esri/layers/Layer",
+                "esri/layers/FeatureLayer",
+                "esri/identity/IdentityManager",
+                "esri/portal/Portal",
+                "esri/portal/PortalItem",
+                "esri/config",
+                ], (
+                Map,
+                SceneView,
+                Layer,
+                FeatureLayer,
+                esriId,
+                Portal,
+                PortalItem,
+                esriConfig) => {
+                const map = new Map({
+                    basemap: "hybrid"
+                });
+
+                const view = new SceneView({
+                    map: map,
+                    container: "viewDiv",
+                    zoom: 16,
+                    center: [90.283092, 22.369860]
+                });
+
+                // let portalUrl = "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer";
+                let portalUrl = "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services";
+                // let portalUrl = "https://landparcelbd.maps.arcgis.com/sharing/rest";
+                // let portalUrl = "https://landparcelbd.maps.arcgis.com/home/";
+                let tokenUrl = "https://www.arcgis.com/sharing/generateToken";
+
+                esriId.registerToken({
+                  server: 'https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer',
+                  token: "pGZ87jqbMJ1Ps_tx0jvcoTu9dSXgW77h8weS-wKhvFE_o3XDL0ZPMiutHEdDhIoFsWrl1kf7JMJtj-Gw3HVvfu5c8UqXwsK-v322vHS1yxJ2O8qmhrwLFEHkKnnow05nczguzgGXEX2cj4_nfX46yM9EMib7iaEtrTKYB7thixeZ7fGGBp8lxj8-ZjE99uK9"
+                })
+
+                /************************************************
+                 *
+                 * Create a layer from an existing Portal item hosted
+                 * in ArcGIS Online using the ID of the item.
+                 *
+                 *************************************************/
+                // Layer.fromPortalItem({
+                //   portalItem: {
+                //     // autocasts as new PortalItem()
+                //     id: "1fd2d6192c554a31bbc90945fcf0ff91"
+                //   }
+                // })
+                //   .then(addLayer)
+                //   .catch(rejection);
+
+                // const portal = new Portal({
+                //   url: "https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer",
+                //   authMode: "immediate",
+                // });
+
+                // esriConfig.portalUrl = portalUrl;
+                // esriConfig.tokenUrl = tokenUrl;
+
+                // esriConfig.apiKey='AAPK1953b729b5594134b3c0637a544f93b4ujYHb9Mv80eLTm6Fr9dPeq9E5fV-G_yBqXoYvhKtYxLePiMnRVHx0T8qn3Mifpz0';
+
+              
+                // var tokenParams = {
+                //     username: "mah_gis2023",
+                //     password: "mah_gis12345!",
+                //     expiration: 60,
+                //     referer: 'https://www.arcgis.com',
+                //     f: "json"
+                // };
+
+                // fetch(tokenUrl, {
+                //     method: "POST",
+                //     body: new URLSearchParams(tokenParams)
+                // }).then(response => {
+                //     if (!response.ok) {
+                //         throw new Error("Network response was not ok");
+                //     }
+                //     return response.json();
+                // }).then(tokenResponse => {
+                //         const token = tokenResponse.token;
+                //         console.log('token ', token);
+                //         esriId.registerToken({
+                //             server: 'https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer',
+                //             token: token
+                //         });
+
+                //         Layer.fromPortalItem({
+                //             portalItem: {
+                //                 // autocasts as new PortalItem()
+                //                 id: "1fd2d6192c554a31bbc90945fcf0ff91",
+                //                 // portalUrl: 'https://landparcelbd.maps.arcgis.com/sharing/rest'
+                //             },
+                //             popupEnabled: false
+                            
+                //         }).then(addLayer)
+                //     }).catch(error=>{
+                //         console.log('error ',error);
+                //     })
+
+
+                // esriId.checkSignInStatus(portalUrl).then(function (isSignedIn) {
+                //     if (isSignedIn) {
+                //         console.log("User is signed in.");
+                //     } else {
+                //         console.log("User is not signed in.");
+                //     }
+                // })
+                //     .catch(function (error) {
+                //         console.error("Error checking sign-in status:", error);
+                //     });
+
+
+                //     for (let i = 1; i <5; i++) {
+                //     var featureLayer = new FeatureLayer({
+                //         url: `https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer/${i}`,
+                //         // requestOptions: {
+                //         //   headers: {
+                //         //     "Authorization": "Bearer " + 'pr2O31aoLiLFKVIgbQB1mXmZkKAuEncVneWoFVJDWsLQ4aiwZG3T-TNqrAY1CrXbAj0Q74g1IRtyUBQrUaMTeEvJgIdD5ILgrCg-QqyE8CONMv-mfV1SJHVhn38mlgzOzk6HNRk4YNE5aq852m_1k7OWUYDH_yG3gCP0KklGpmKa0WLat8BCam7V1x9znEVp'
+                //         //   }
+                //         // }
+                //     });
+
+
+                //     featureLayer.queryFeatures().then(function (results) {
+                //         results.features.forEach(function (feature) {
+                //             console.log('feature ',feature.geometry);
+                //             // console.log(feature);
+                //             // console.log(feature.attributes.OBJECTID);
+                //         });
+                //     });
+
+                   
+
+                // }
+
+                var featureLayer = new FeatureLayer({
+                        url: `https://services9.arcgis.com/JrBT6JVVu83wFjjB/arcgis/rest/services/Itbaria_Mauza/FeatureServer`,
+                        // requestOptions: {
+                        //   headers: {
+                        //     "Authorization": "Bearer " + 'pr2O31aoLiLFKVIgbQB1mXmZkKAuEncVneWoFVJDWsLQ4aiwZG3T-TNqrAY1CrXbAj0Q74g1IRtyUBQrUaMTeEvJgIdD5ILgrCg-QqyE8CONMv-mfV1SJHVhn38mlgzOzk6HNRk4YNE5aq852m_1k7OWUYDH_yG3gCP0KklGpmKa0WLat8BCam7V1x9znEVp'
+                        //   }
+                        // }
+                    });
+
+
+                   /*  featureLayer.queryFeatures().then(function (results) {
+                        console.log('geo ',results.features);
+                        results.features.forEach(function (feature) {
+                            console.log('feature ',feature.geometry.latitude);
+                           
+                            // // console.log(feature);
+                            // console.log(feature.attributes);
+                        });
+                    }); */
+                  
+                    featureLayer.load().then(() => {
+                    const query = featureLayer.createQuery();
+                    query.returnGeometry = true;
+                    query.outFields = ["*"];
+
+                    featureLayer.queryFeatures(query).then(({ features }) => {
+                        features.forEach(feature => {
+                            const geometry = feature.geometry;
+                            const type = geometry.type; // e.g. 'point', 'polygon', 'polyline'
+                            const coordinates = geometry.coordinates; // array of coordinates
+                            console.log('coordinates ',coordinates,'type ',type,' geometry ',feature.geometry);
+                        });
+                    });
+                });
+
+                
+                // map.add(featureLayer);
+
+                function addLayer(layer) {
+                  
+                    map.add(layer);
+                }
+
+                function rejection(error) {
+                    console.log("Layer failed to load: ", error);
+                }
+            });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>
