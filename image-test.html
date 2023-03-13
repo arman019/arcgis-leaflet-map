@@ -1,0 +1,146 @@
+<!-- // Define the bounding box of the area you want to save
+var bounds = L.latLngBounds(
+  L.latLng(51.503, -0.08),
+  L.latLng(51.507, -0.04)
+);
+
+// Define the zoom level
+var zoom = 15;
+
+// Create the map
+var map = L.map('map', {
+  crs: L.CRS.EPSG3857,
+  minZoom: 1,
+  maxZoom: 19,
+  attributionControl: false,
+  zoomControl: false
+}).setView([51.505, -0.09], zoom);
+
+// Add some layers to the map
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+  maxZoom: 19
+}).addTo(map);
+
+L.marker([51.505, -0.09]).addTo(map);
+
+// Render the map as an image
+leafletImage(map, function(error, canvas) {
+  if (error) {
+    console.log(error);
+  } else {
+    // Convert the canvas to a data URL
+    var dataUrl = canvas.toDataURL();
+    
+    // Save the data URL to storage
+    localStorage.setItem('map_data_url', dataUrl);
+  }
+});
+ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+    <!-- Load Esri Leaflet Vector from CDN -->
+    <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-image@0.4.0/leaflet-image.min.js"></script>
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+</head>
+
+<style>
+    html,
+    body,
+    #map {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      color: #323232;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="images"></div>
+  <img id="mainImg" src="" alt="">
+  </body>
+  <script>
+    var bounds = L.latLngBounds(
+        L.latLng(51.503, -0.08),
+        L.latLng(51.507, -0.04)
+    );
+
+    // Define the zoom level
+    var zoom = 15;
+
+    // Create the map
+    var map = L.map('map', {
+        crs: L.CRS.EPSG3857,
+        minZoom: 1,
+        maxZoom: 19,
+        attributionControl: false,
+        zoomControl: false
+    }).setView([51.505, -0.09], zoom);
+
+    // Add some layers to the map
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    L.marker([51.505, -0.09]).addTo(map);
+console.log('map ',map);
+    leafletImage(map, function(error, canvas) {
+  if (error) {
+    console.log(error);
+  } else {
+    // Convert the canvas to a data URL
+    var dataUrl = canvas.toDataURL();
+  
+
+                var img = document.createElement('img');
+                var dimensions = map.getSize();
+                img.width = dimensions.x;
+                img.height = dimensions.y;
+                img.src = canvas.toDataURL();
+                document.getElementById('images').innerHTML = '';
+                document.getElementById('images').appendChild(img);
+    
+    // Create a link to download the data URL
+    var link = document.createElement('a');
+    link.download = 'map.png';
+    link.href = dataUrl;
+    
+    // Click the link to download the data URL
+    link.click();
+  }
+});
+</script>
+</html>

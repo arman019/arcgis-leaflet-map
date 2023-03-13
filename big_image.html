@@ -4,6 +4,8 @@
     <title>Generate a token</title>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="Leaflet.BigImage/dist/Leaflet.BigImage.min.css">
+
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
     <!-- Load Esri Leaflet from CDN -->
     <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
@@ -13,6 +15,7 @@
     <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-image@0.4.0/leaflet-image.min.js"></script>
+    <script src="Leaflet.BigImage/dist/Leaflet.BigImage.min.js"></script>
 
     <style>
       html,
@@ -40,7 +43,8 @@
       }
 
       // let map = L.map("map").setView([22.369860,90.283092], 16);
-      let map = L.map("map").setView([22.362860,90.283092], 13);
+      let map = L.map("map").setView([22.362860,90.283092], 16);
+      L.control.bigImage({position: 'topright'}).addTo(map);
 
      /*  L.esri.Vector.vectorBasemapLayer("ArcGIS:LightGray:Base", {
         apikey: apiKey
@@ -213,51 +217,6 @@
                 filter:bboxFilterContain,
               }).addTo(map);
        
-              var valGet= document.getElementsByTagName('g');
-              var valGetSvg= document.getElementsByTagName('svg');
-              console.log('valGetSvg ',valGetSvg);
-              let {width, height} = valGetSvg[0].getBBox(); 
-              let clonedSvgElement = valGetSvg[0].cloneNode(true);
-              let outerHTML = clonedSvgElement.outerHTML;
-              let  blob = new Blob([outerHTML],{type:'image/svg+xml;charset=utf-8'});
-
-              let URL = window.URL || window.webkitURL || window;
-              let blobURL = URL.createObjectURL(blob);
-
-
-              let image = new Image();
-              /* image.onload = () => {
-
-                let canvas = document.createElement('canvas');
-
-                canvas.width = width;
-
-                canvas.height = height;
-                let context = canvas.getContext('2d');
-                context.drawImage(image, 0, 0, width, height);
-                //  downloadImage(canvas); need to implement
-              }; */
-              var img = document.createElement('img');
-              var dimensions = map.getSize();
-              img.width = dimensions.x;
-              img.height = dimensions.y;
-
-              let canvas = document.createElement('canvas');
-
-              canvas.width = width;
-
-              canvas.height = height;
-              let context = canvas.getContext('2d');
-              context.drawImage(image, 0, 0, width, height);
-              // image.src = blobURL;
-              img.src = canvas.toDataURL();
-              console.log('image ', image);
-
-              console.log('blobURL ', canvas);
-              document.getElementById('images').innerHTML = '';
-                document.getElementById('images').appendChild(img);
-              
-              // console.log(' filteredBound ',filteredBound);
 
             
             }
