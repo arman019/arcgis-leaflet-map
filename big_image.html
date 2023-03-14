@@ -4,7 +4,7 @@
     <title>Generate a token</title>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
-    <link rel="stylesheet" href="Leaflet.BigImage/dist/Leaflet.BigImage.min.css">
+    <link rel="stylesheet" href="lib/Leaflet.BigImage.min.css">
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
     <!-- Load Esri Leaflet from CDN -->
@@ -15,8 +15,9 @@
     <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-image@0.4.0/leaflet-image.min.js"></script>
-    <script src="Leaflet.BigImage/dist/Leaflet.BigImage.min.js"></script>
+    <script src="lib/Leaflet.BigImage.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
       html,
@@ -24,11 +25,12 @@
       #map {
         padding: 0;
         margin: 0;
-        height: 100%;
-        width: 100%;
+        height: 97%;
+        width: 86%;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 14px;
         color: #323232;
+        /* opacity: 0; */
       }
     </style>
   </head>
@@ -44,7 +46,9 @@
       }
 
       // let map = L.map("map").setView([22.369860,90.283092], 16);
-      let map = L.map("map").setView([22.362860,90.283092], 16);
+      let map = L.map("map",{
+        // zoomSnap: 0.15
+      }).setView([22.362860,90.283092], 16);
       L.control.bigImage({position: 'topright'}).addTo(map);
 
      /*  L.esri.Vector.vectorBasemapLayer("ArcGIS:LightGray:Base", {
@@ -52,7 +56,7 @@
       }).addTo(map); */
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-        maxZoom: 19
+        maxZoom: 20,
     }).addTo(map);
 
       function serverAuth(callback) { //To acess the dynamic map layer
@@ -141,10 +145,12 @@
 
           let filteredBound=[];
           var mapBbox = map.getBounds();
+          var centerOfSpecificFeature=0;
           
           function bboxFilter(feature) {
             //2291,2892,2270(perfect to bug),2341,2998(anamoly)
             if(feature.properties.Mouza_Dag=='2998'){
+                centerOfSpecificFeature=turf.centerOfMass(feature).geometry.coordinates;
               return true;
             }
             else{
@@ -155,7 +161,18 @@
         var intersection='';
 
    
+          function setCustomMarker(lat, lng, content) {
 
+            myTextLabel = L.marker([lng, lat], {
+              icon: L.divIcon({
+                className: 'text-labels',
+                html: content
+              }),
+              zIndexOffset: 10000000
+            });
+
+            return myTextLabel;
+          }
           function bboxFilterContain(feature) {
             
             var polylatlng = new L.polygon([]);
@@ -181,7 +198,10 @@
             if (intersection !=null) {
               // console.log('filteredBound ',filteredBound);
               console.log('feature ',feature.properties.Mouza_Dag);
-             
+              var centerFilter =turf.centerOfMass(feature).geometry.coordinates;
+              console.log('feature ',feature.properties.Mouza_Dag);
+              markerVal=setCustomMarker(centerFilter[0], centerFilter[1], feature.properties.Mouza_Dag);
+                markerVal.addTo(map);
              return true;
             }
             else{
@@ -217,9 +237,27 @@
               L.geoJSON(features,{
                 filter:bboxFilterContain,
               }).addTo(map);
-          
+              console.log('centerOfSpecificFeature ',centerOfSpecificFeature);
+        
+            //   map.setView([filteredBound.getSouthWest().lat,filteredBound.getNorthEast().lng],16.75)
+              
+              new Promise(function (setMap, myReject) {
+                    map.setView([centerOfSpecificFeature[1],centerOfSpecificFeature[0]], 19)
+                    map.on('moveend', function(e){setMap(mapPrinter)})
 
-            
+                }).then((mapPrinter) => {
+                    console.log('here');
+                  //   $('.leaflet-marker-pane').attr('id','capture')
+                  //   console.log('jq ',$('.leaflet-marker-pane').attr('id'));
+                  //   console.log('elem ',document.querySelector("#capture"));
+                  //   html2canvas(document.querySelector("#capture")).then(canvas => {
+                  //     console.log('canvas ',canvas);
+                      
+                  //   document.body.appendChild(canvas)
+                  // });
+                    mapPrinter._click();
+                })
+
             }
           });
           mapSheet_2.query().run(function (error, featureCollection) {
